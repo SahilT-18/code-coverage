@@ -11,6 +11,7 @@ pipeline {
                 script {
                     sh "apt-get update && apt-get install -y python3"
                     sh "python3 -m pip install coverage"
+                    sh "coverage --version"
                 }
             }
         }
