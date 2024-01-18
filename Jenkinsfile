@@ -2,14 +2,24 @@ pipeline {
     agent any
 
     environment {
-        PYTHON_FILE = 'test_math_operations.py'
+        PYTHON_FILE = 'path/to/test.py'
     }
 
     stages {
+        
+        stage('Checkout') {
+            steps {
+                script {
+                    // Checkout the Git repository
+                    checkout scm
+                }
+            }
+        }
+
         stage('Installation') {
             steps {
                 script {
-                    sh "apt-get update && apt-get install -y python3"
+                    // Install dependencies
                     sh "python3 -m pip install coverage"
                     sh "coverage --version"
                 }
@@ -19,21 +29,27 @@ pipeline {
         stage('Run Test') {
             steps {
                 script {
+                    // Run tests and Generate reports
+                    sh "pip install -r requirements.txt"
                     sh "coverage run ${PYTHON_FILE}"
                     sh "coverage report"
-                    sh "coverage xml"
+                    sh "coverage xml -o coverage.xml"
                 }
             }
         }
 
         stage('Sonar Analysis') {
+            environment {
+                SCANNER_HOME = tool 'sonar_scanner_name'
+                PROJECT_KEY = ''
+                PROJECT_NAME = ''
+            }
             steps {
                 script {
-                    def scannerHome = tool 'sonar-scanner'
                     withSonarQubeEnv('sonarcloud') {
-                        sh """${scannerHome}/bin/sonar-scanner \
-                        -D sonar.projectKey=cov-python \
-                        -D sonar.projectName=cov-python \
+                        sh """${SCANNER_HOME}/bin/sonar-scanner \
+                        -D sonar.projectKey=${PROJECT_KEY} \
+                        -D sonar.projectName=${PROJECT_NAME} \
                         -Dsonar.python.coverage.reportPaths=coverage.xml"""
                     }
                 }
