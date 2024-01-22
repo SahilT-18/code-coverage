@@ -1,0 +1,33 @@
+pipeline {
+    agent any
+
+    environment {
+        MVN_HOME = tool 'Maven'
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                script {
+                    sh "${MVN_HOME}/bin/mvn clean test"
+                }
+            }
+        }
+
+        stage('Analysis') {
+            environment {
+                PROJECT_KEY   = ''
+                PROJECT_NAME  = ''
+                SONAR_TOKEN   = ''
+            }
+            steps {
+                script {
+                    sh """${MVN_HOME}/bin/mvn clean verify \
+                     -Dsonar.projectKey=Java-Project \
+                     -Dsonar.projectName=Java-Project \ 
+                     -Dsonar.token= """
+                }
+            }
+        }
+    }
+}

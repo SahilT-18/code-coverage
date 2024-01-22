@@ -40,9 +40,9 @@ pipeline {
 
         stage('Sonar Analysis') {
             environment {
-                SCANNER_HOME = tool 'sonar_scanner_name'
-                PROJECT_KEY = ''
-                PROJECT_NAME = ''
+                SCANNER_HOME  = tool 'sonar_scanner_name'
+                PROJECT_KEY   = ''
+                PROJECT_NAME  = ''
             }
             steps {
                 script {
