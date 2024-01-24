@@ -1,0 +1,44 @@
+pipeline {
+    agent any 
+
+    tools {
+        go "Go_Installation_name"
+    }
+
+    stages {
+        stage('Build') {
+            environment {
+                DIR_PATH = "path/to/directory"
+            }
+            steps {
+                script {
+                    sh "go mod init ${DIR_PATH}"
+                    sh "go mod tidy"
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                script {
+                    sh "go test ./... -coverprofile=coverage.out"
+                }
+            }
+        }
+
+        stage('Code Analysis') {
+            environment {
+                SCANNER_HOME  = tool 'sonar_scanner_name'
+                SONAR_TOKEN   = ''
+            }
+            steps {
+                script {
+                   withSonarQubeEnv('sonarcloud_server') {
+                    sh """${SCANNER_HOME}/bin/sonar-scanner \
+                    -D sonar.token=${SONAR_TOKEN}"""
+                   }
+                }
+            }
+        }
+    }
+}

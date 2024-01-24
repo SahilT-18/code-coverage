@@ -1,21 +1,7 @@
 pipeline {
     agent any
 
-    environment {
-        PYTHON_FILE = 'path/to/test.py'
-    }
-
     stages {
-        
-        stage('Checkout') {
-            steps {
-                script {
-                    // Checkout the Git repository
-                    checkout scm
-                }
-            }
-        }
-
         stage('Installation') {
             steps {
                 script {
@@ -27,6 +13,9 @@ pipeline {
         }
 
         stage('Run Test') {
+            environment {
+                PYTHON_FILE = 'path/to/test.py'
+            }
             steps {
                 script {
                     // Run tests and Generate reports
@@ -38,7 +27,7 @@ pipeline {
             }
         }
 
-        stage('Sonar Analysis') {
+        stage('Code Analysis') {
             environment {
                 SCANNER_HOME  = tool 'sonar_scanner_name'
                 PROJECT_KEY   = ''
@@ -46,7 +35,7 @@ pipeline {
             }
             steps {
                 script {
-                    withSonarQubeEnv('sonarcloud') {
+                    withSonarQubeEnv('sonarcloud_server') {
                         sh """${SCANNER_HOME}/bin/sonar-scanner \
                         -D sonar.projectKey=${PROJECT_KEY} \
                         -D sonar.projectName=${PROJECT_NAME} \
