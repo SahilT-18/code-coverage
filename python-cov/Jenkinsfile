@@ -37,8 +37,8 @@ pipeline {
                 script {
                     withSonarQubeEnv('sonarcloud_server') {
                         sh """${SCANNER_HOME}/bin/sonar-scanner \
-                        -D sonar.projectKey=${PROJECT_KEY} \
-                        -D sonar.projectName=${PROJECT_NAME} \
+                        -Dsonar.projectKey=${PROJECT_KEY} \
+                        -Dsonar.projectName=${PROJECT_NAME} \
                         -Dsonar.python.coverage.reportPaths=coverage.xml"""
                     }
                 }
