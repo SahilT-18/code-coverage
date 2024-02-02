@@ -2,7 +2,7 @@ pipeline {
     agent any 
 
     tools {
-        go "Go_Installation_name"
+        go "Go_Installation_Name"
     }
 
     stages {

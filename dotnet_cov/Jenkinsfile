@@ -1,0 +1,39 @@
+pipeline {
+    agent any
+
+    environment {
+        PROJECT_KEY = ""
+        SONAR_TOKEN = ""
+    }
+
+    tools {
+        dotnet 'Dotnet_Installation_Name'
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                script {
+                    sh "dotnet sonarscanner begin /k:${PROJECT_KEY} /d:sonar.token=${SONAR_TOKEN} /d:sonar.cs.opencover.reportsPaths=coverage.xml"
+                    sh "dotnet build --no-incremental"
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                script {
+                    sh "dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=..\coverage.xml"
+                }
+            }
+        }
+
+        stage('Analysis') {
+            steps {
+                script {
+                    sh "dotnet sonarscanner end /d:sonar.token=${SONAR_TOKEN}"
+                }
+            }
+        }
+    }
+}
